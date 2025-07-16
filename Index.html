@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logical vs Emotional Decision-Making Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 1.2em;
+            padding: 20px 40px;
+            margin-top: 20px;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .result-title {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .result-description {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .result-traits {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .trait-item {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .restart-btn {
+            background: #28a745;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="start-screen" id="startScreen">
+            <h1>🧠 Decision-Making Style Quiz</h1>
+            <p class="subtitle">Discover whether you're more logical or emotional in your decision-making process</p>
+            <p style="margin: 20px 0; color: #666;">This quiz will help you understand your natural approach to making decisions and solving problems.</p>
+            <button class="btn start-btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div class="quiz-content" id="quizContent" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-container active" id="question1">
+                <div class="question">When making an important life decision, what's your first instinct?</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'logical')">Make a pros and cons list and analyze all possible outcomes</div>
+                    <div class="option" onclick="selectOption(1, 'emotional')">Go with what feels right in your heart</div>
+                    <div class="option" onclick="selectOption(1, 'logical')">Research extensively and gather all relevant data</div>
+                    <div class="option" onclick="selectOption(1, 'emotional')">Consider how it will affect the people I care about</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question2">
+                <div class="question">You're choosing between two job offers. What matters most to you?</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'logical')">Salary, benefits, and career advancement opportunities</div>
+                    <div class="option" onclick="selectOption(2, 'emotional')">Company culture and how comfortable I feel with the team</div>
+                    <div class="option" onclick="selectOption(2, 'logical')">Job security and industry growth potential</div>
+                    <div class="option" onclick="selectOption(2, 'emotional')">Work-life balance and personal fulfillment</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question3">
+                <div class="question">When solving a problem at work, you typically:</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'logical')">Break it down into smaller, manageable parts</div>
+                    <div class="option" onclick="selectOption(3, 'emotional')">Trust your instincts and go with your gut feeling</div>
+                    <div class="option" onclick="selectOption(3, 'logical')">Look for similar cases and apply proven methods</div>
+                    <div class="option" onclick="selectOption(3, 'emotional')">Consider how the solution will impact team morale</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question4">
+                <div class="question">When giving advice to a friend, you're more likely to:</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'emotional')">Listen to their feelings and provide emotional support</div>
+                    <div class="option" onclick="selectOption(4, 'logical')">Help them think through the situation logically</div>
+                    <div class="option" onclick="selectOption(4, 'emotional')">Share your own similar experiences</div>
+                    <div class="option" onclick="selectOption(4, 'logical')">Suggest practical steps they can take</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question5">
+                <div class="question">In a heated argument, you tend to:</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(5, 'logical')">Stay calm and focus on facts and evidence</div>
+                    <div class="option" onclick="selectOption(5, 'emotional')">Express your feelings and emotions openly</div>
+                    <div class="option" onclick="selectOption(5, 'logical')">Take time to think before responding</div>
+                    <div class="option" onclick="selectOption(5, 'emotional')">Try to understand the other person's perspective</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question6">
+                <div class="question">When planning a vacation, what's most important?</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(6, 'logical')">Budget, itinerary, and getting the best deals</div>
+                    <div class="option" onclick="selectOption(6, 'emotional')">Creating memorable experiences with loved ones</div>
+                    <div class="option" onclick="selectOption(6, 'logical')">Researching destinations and activities thoroughly</div>
+                    <div class="option" onclick="selectOption(6, 'emotional')">Going somewhere that excites and inspires you</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question7">
+                <div class="question">Your approach to financial decisions is:</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(7, 'logical')">Spreadsheets, budgets, and long-term planning</div>
+                    <div class="option" onclick="selectOption(7, 'emotional')">Based on what makes me feel secure and happy</div>
+                    <div class="option" onclick="selectOption(7, 'logical')">Conservative and risk-averse</div>
+                    <div class="option" onclick="selectOption(7, 'emotional')">Flexible, depending on my current situation</div>
+                </div>
+            </div>
+
+            <div class="question-container" id="question8">
+                <div class="question">When facing a difficult decision, you prefer to:</div>
+                <div class="options">
+                    <div class="option" onclick="selectOption(8, 'logical')">Sleep on it and make a decision with a clear head</div>
+                    <div class="option" onclick="selectOption(8, 'emotional')">Talk it through with people you trust</div>
+                    <div class="option" onclick="selectOption(8, 'logical')">Create a decision matrix with weighted criteria</div>
+                    <div class="option" onclick="selectOption(8, 'emotional')">Go with your first instinct</div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn" id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-description" id="resultDescription"></div>
+            <div class="result-traits" id="resultTraits"></div>
+            <button class="btn restart-btn" onclick="restartQuiz()">Take Quiz Again</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 8;
+        let answers = {};
+        let logicalScore = 0;
+        let emotionalScore = 0;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'block';
+            updateProgress();
+        }
+
+        function selectOption(questionNum, type) {
+            // Remove previous selection
+            const options = document.querySelectorAll(`#question${questionNum} .option`);
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // Add selection to clicked option
+            event.target.classList.add('selected');
+            
+            // Store answer
+            answers[questionNum] = type;
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById(`question${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                document.getElementById(`question${currentQuestion}`).classList.add('active');
+                updateProgress();
+                updateNavigation();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                document.getElementById(`question${currentQuestion}`).classList.remove('active');
+                currentQuestion--;
+                document.getElementById(`question${currentQuestion}`).classList.add('active');
+                updateProgress();
+                updateNavigation();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestion === 1;
+            nextBtn.disabled = !answers[currentQuestion];
+            
+            if (currentQuestion === totalQuestions) {
+                nextBtn.textContent = 'Show Results';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        function showResults() {
+            // Calculate scores
+            logicalScore = 0;
+            emotionalScore = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                if (answers[i] === 'logical') {
+                    logicalScore++;
+                } else if (answers[i] === 'emotional') {
+                    emotionalScore++;
+                }
+            }
+
+            // Hide quiz content and show results
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+
+            // Determine result type
+            if (logicalScore > emotionalScore) {
+                showLogicalResult();
+            } else if (emotionalScore > logicalScore) {
+                showEmotionalResult();
+            } else {
+                showBalancedResult();
+            }
+        }
+
+        function showLogicalResult() {
+            document.getElementById('resultTitle').textContent = '🧠 Logical Decision-Maker';
+            document.getElementById('resultDescription').textContent = 'You approach decisions with analytical thinking and objective reasoning. You prefer to gather facts, analyze data, and make choices based on logic rather than emotions.';
+            document.getElementById('resultTraits').innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #333;">Your Strengths:</h3>
+                <div class="trait-item">• Excellent at analyzing complex problems objectively</div>
+                <div class="trait-item">• Make consistent, well-reasoned decisions</div>
+                <div class="trait-item">• Good at separating facts from emotions</div>
+                <div class="trait-item">• Reliable in high-pressure situations</div>
+                <div class="trait-item">• Strong problem-solving skills</div>
+                <br>
+                <h3 style="margin-bottom: 15px; color: #333;">Growth Areas:</h3>
+                <div class="trait-item">• Consider the emotional impact of decisions on others</div>
+                <div class="trait-item">• Don't ignore your intuition completely</div>
+                <div class="trait-item">• Remember that not all decisions require extensive analysis</div>
+            `;
+        }
+
+        function showEmotionalResult() {
+            document.getElementById('resultTitle').textContent = '❤️ Emotional Decision-Maker';
+            document.getElementById('resultDescription').textContent = 'You make decisions based on your feelings, values, and intuition. You consider the human element and emotional impact when choosing between options.';
+            document.getElementById('resultTraits').innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #333;">Your Strengths:</h3>
+                <div class="trait-item">• Strong emotional intelligence and empathy</div>
+                <div class="trait-item">• Good at reading people and situations</div>
+                <div class="trait-item">• Make decisions that align with your values</div>
+                <div class="trait-item">• Considerate of others' feelings</div>
+                <div class="trait-item">• Trust your instincts and intuition</div>
+                <br>
+                <h3 style="margin-bottom: 15px; color: #333;">Growth Areas:</h3>
+                <div class="trait-item">• Sometimes step back and analyze situations objectively</div>
+                <div class="trait-item">• Consider long-term consequences beyond immediate feelings</div>
+                <div class="trait-item">• Don't let emotions cloud important decisions</div>
+            `;
+        }
+
+        function showBalancedResult() {
+            document.getElementById('resultTitle').textContent = '⚖️ Balanced Decision-Maker';
+            document.getElementById('resultDescription').textContent = 'You have a balanced approach to decision-making, combining both logical analysis and emotional consideration. You adapt your style based on the situation.';
+            document.getElementById('resultTraits').innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #333;">Your Strengths:</h3>
+                <div class="trait-item">• Flexible decision-making approach</div>
+                <div class="trait-item">• Consider both facts and feelings</div>
+                <div class="trait-item">• Good at adapting to different situations</div>
+                <div class="trait-item">• Well-rounded perspective on problems</div>
+                <div class="trait-item">• Balance efficiency with empathy</div>
+                <br>
+                <h3 style="margin-bottom: 15px; color: #333;">Growth Areas:</h3>
+                <div class="trait-item">• Develop stronger preference for certain types of decisions</div>
+                <div class="trait-item">• Don't overthink simple choices</div>
+                <div class="trait-item">• Trust your judgment more confidently</div>
+            `;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 1;
+            answers = {};
+            logicalScore = 0;
+            emotionalScore = 0;
+            
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+            
+            // Reset all selections
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+
